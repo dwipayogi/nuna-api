@@ -1,0 +1,79 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" 
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  username      String
+  email         String    @unique
+  password      String
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // One-to-many relationship with Journal
+  journals      Journal[]
+  posts        Post[]
+  comments     Comment[]
+
+}
+
+model Journal {
+  id            String    @id @default(uuid())
+  title         String
+  content       String
+  mood          String
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  userId        String
+
+  // Foreign key to User
+  user          User      @relation(fields: [userId], references: [id])
+}
+
+model Post {
+  id            String    @id @default(uuid())
+  title         String
+  content       String
+  tags          String[]
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  userId        String
+
+  // Foreign key to User
+  user          User      @relation(fields: [userId], references: [id])
+  // One-to-many relationship with Comment
+  comments      Comment[]
+}
+
+model Comment {
+  id            String    @id @default(uuid())
+  content       String
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  postId        String
+  userId        String
+
+  // Foreign key to Post
+  post          Post      @relation(fields: [postId], references: [id])
+  // Foreign key to User
+  user          User      @relation(fields: [userId], references: [id])
+}
+
+model Meditate {
+  id              String    @id @default(uuid())
+  title           String
+  description     String
+  longDescription String
+  duration        Int
+  imageUrl        String
+  steps           String[]
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+}
