@@ -53,21 +53,28 @@ export const createComment = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    const comment = await prisma.comment.create({
-      data: {
-        content,
-        postId,
-        userId,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            username: true,
+    // Use transaction to create comment and update post's comment count
+    const [comment, _] = await prisma.$transaction([
+      prisma.comment.create({
+        data: {
+          content,
+          postId,
+          userId,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.post.update({
+        where: { id: postId },
+        data: { commentsCount: { increment: 1 } },
+      }),
+    ]);
 
     res.status(201).json(comment);
   } catch (error) {
@@ -159,12 +166,18 @@ export const deleteComment = async (req: Request, res: Response) => {
       });
     }
 
-    // Delete the comment
-    await prisma.comment.delete({
-      where: {
-        id,
-      },
-    });
+    // Delete the comment and update post comment count in a transaction
+    await prisma.$transaction([
+      prisma.comment.delete({
+        where: {
+          id,
+        },
+      }),
+      prisma.post.update({
+        where: { id: existingComment.postId },
+        data: { commentsCount: { decrement: 1 } },
+      }),
+    ]);
 
     res.status(200).json({ message: "Comment deleted successfully" });
   } catch (error) {

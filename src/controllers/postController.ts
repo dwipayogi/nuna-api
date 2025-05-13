@@ -27,13 +27,25 @@ export const getAllPosts = async (req: Request, res: Response) => {
             },
           },
         },
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    res.status(200).json(posts);
+    // Pastikan likes dan jumlah komentar dikembalikan dengan benar
+    const formattedPosts = posts.map((post) => ({
+      ...post,
+      commentsCount: post._count.comments,
+      _count: undefined,
+    }));
+
+    res.status(200).json(formattedPosts);
   } catch (error) {
     console.error("Error fetching posts:", error);
     res.status(500).json({ message: "Server error" });
@@ -51,13 +63,24 @@ export const getPostsByUser = async (req: Request, res: Response) => {
       },
       include: {
         comments: true,
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    res.status(200).json(posts);
+    const formattedPosts = posts.map((post) => ({
+      ...post,
+      commentsCount: post._count.comments,
+      _count: undefined,
+    }));
+
+    res.status(200).json(formattedPosts);
   } catch (error) {
     console.error("Error fetching user posts:", error);
     res.status(500).json({ message: "Server error" });
@@ -91,6 +114,11 @@ export const getPostById = async (req: Request, res: Response) => {
           },
           orderBy: {
             createdAt: "desc",
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
           },
         },
       },
@@ -218,6 +246,85 @@ export const deletePost = async (req: Request, res: Response) => {
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
     console.error("Error deleting post:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Like a post
+export const likePost = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // Check if post exists
+    const existingPost = await prisma.post.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!existingPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Update the post likes count
+    const updatedPost = await prisma.post.update({
+      where: {
+        id,
+      },
+      data: {
+        likes: { increment: 1 },
+      },
+    });
+
+    res.status(200).json({
+      message: "Post liked successfully",
+      likes: updatedPost.likes,
+    });
+  } catch (error) {
+    console.error("Error liking post:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Unlike a post
+export const unlikePost = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // Check if post exists
+    const existingPost = await prisma.post.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!existingPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Make sure likes don't go below zero
+    if (existingPost.likes <= 0) {
+      return res.status(400).json({ message: "Post has no likes to remove" });
+    }
+
+    // Update the post likes count
+    const updatedPost = await prisma.post.update({
+      where: {
+        id,
+      },
+      data: {
+        likes: { decrement: 1 },
+      },
+    });
+
+    res.status(200).json({
+      message: "Post unliked successfully",
+      likes: updatedPost.likes,
+    });
+  } catch (error) {
+    console.error("Error unliking post:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
