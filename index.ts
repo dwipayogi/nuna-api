@@ -7,6 +7,7 @@ import postRoutes from "./src/routes/postRoutes.ts";
 import commentRoutes from "./src/routes/commentRoutes.ts";
 import meditateRoutes from "./src/routes/meditateRoutes.ts";
 import chatRoutes from "./src/routes/chatRoutes.ts";
+import moodHistoryRoutes from "./src/routes/moodRoutes.ts";
 
 // Load environment variables
 dotenv.config();
@@ -27,6 +28,7 @@ app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/meditate", meditateRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/mood-history", moodHistoryRoutes);
 
 // Root route
 app.get("/", (req, res) => {

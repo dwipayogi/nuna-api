@@ -106,16 +106,16 @@ ${moodAnalysis}
         {
           role: "system",
           content:
-            "Anda adalah seorang ahli psikologi dengan pengalaman bertahun-tahun. Berikan analisis yang mendalam dan personal tentang pola mood pengguna berdasarkan jurnal mereka. Identifikasi tren, wawasan psikologis, dan berikan rekomendasi praktis untuk menjaga kesehatan mental. Jawab dengan bahasa Indonesia yang empatik, mendukung, dan mudah dipahami.",
+            "Anda adalah seorang ahli psikologi dengan pengalaman bertahun-tahun. Berikan analisis yang mendalam dan personal tentang pola mood pengguna berdasarkan jurnal mereka. Identifikasi tren, wawasan psikologis, dan berikan rekomendasi praktis untuk menjaga kesehatan mental. Jawab dengan bahasa Indonesia singkat dan mudah dipahami.",
         },
         {
           role: "user",
-          content: `Berikut adalah data jurnal saya beberapa waktu terakhir:\n\n${formattedData}\n\nTolong analisis pola mood dan keadaan psikologis saya berdasarkan jurnal-jurnal ini. Berikan wawasan tentang pola yang mungkin tidak saya sadari dan rekomendasi untuk meningkatkan kesehatan mental saya.`,
+          content: `Berikut adalah data jurnal saya beberapa waktu terakhir:\n\n${formattedData}\n\nTolong analisis pola mood dan keadaan psikologis saya berdasarkan jurnal-jurnal ini. Berikan wawasan tentang pola yang mungkin tidak saya sadari dan rekomendasi untuk meningkatkan kesehatan mental saya. Buatkan jawaban yang singkat dan ringkas tanpa bertele-tele`,
         },
       ],
       model: "llama3-8b-8192",
       temperature: 0.7, // Menurunkan temperature agar respon lebih konsisten
-      max_tokens: 4096,
+      max_tokens: 1024,
       top_p: 1,
       stream: false,
     });

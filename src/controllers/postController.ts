@@ -258,28 +258,48 @@ export const likePost = async (req: Request, res: Response) => {
 
     // Check if post exists
     const existingPost = await prisma.post.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
     });
 
     if (!existingPost) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    // Update the post likes count
-    const updatedPost = await prisma.post.update({
+    // Check if user already liked this post
+    const existingLike = await prisma.userLike.findUnique({
       where: {
-        id,
-      },
-      data: {
-        likes: { increment: 1 },
+        userId_postId: {
+          userId: userId,
+          postId: id,
+        },
       },
     });
 
+    if (existingLike) {
+      return res.status(400).json({ message: "You already liked this post" });
+    }
+
+    // Transaction to create the like record and increment post likes
+    const result = await prisma.$transaction([
+      // Create record in UserLike table
+      prisma.userLike.create({
+        data: {
+          userId: userId,
+          postId: id,
+        },
+      }),
+      // Increment post likes counter
+      prisma.post.update({
+        where: { id },
+        data: {
+          likes: { increment: 1 },
+        },
+      }),
+    ]);
+
     res.status(200).json({
       message: "Post liked successfully",
-      likes: updatedPost.likes,
+      likes: result[1].likes,
     });
   } catch (error) {
     console.error("Error liking post:", error);
@@ -293,35 +313,43 @@ export const unlikePost = async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    // Check if post exists
-    const existingPost = await prisma.post.findUnique({
+    // Check if user has liked this post
+    const existingLike = await prisma.userLike.findUnique({
       where: {
-        id,
+        userId_postId: {
+          userId: userId,
+          postId: id,
+        },
       },
     });
 
-    if (!existingPost) {
-      return res.status(404).json({ message: "Post not found" });
+    if (!existingLike) {
+      return res.status(400).json({ message: "You haven't liked this post" });
     }
 
-    // Make sure likes don't go below zero
-    if (existingPost.likes <= 0) {
-      return res.status(400).json({ message: "Post has no likes to remove" });
-    }
-
-    // Update the post likes count
-    const updatedPost = await prisma.post.update({
-      where: {
-        id,
-      },
-      data: {
-        likes: { decrement: 1 },
-      },
-    });
+    // Transaction to delete the like record and decrement post likes
+    const result = await prisma.$transaction([
+      // Delete record from UserLike table
+      prisma.userLike.delete({
+        where: {
+          userId_postId: {
+            userId: userId,
+            postId: id,
+          },
+        },
+      }),
+      // Decrement post likes counter
+      prisma.post.update({
+        where: { id },
+        data: {
+          likes: { decrement: 1 },
+        },
+      }),
+    ]);
 
     res.status(200).json({
       message: "Post unliked successfully",
-      likes: updatedPost.likes,
+      likes: result[1].likes,
     });
   } catch (error) {
     console.error("Error unliking post:", error);

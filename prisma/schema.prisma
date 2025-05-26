@@ -10,18 +10,20 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String        @id @default(uuid())
   username      String
-  email         String    @unique
+  email         String        @unique
   password      String
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
 
   // One-to-many relationship with Journal
   journals      Journal[]
-  posts        Post[]
-  comments     Comment[]
-
+  posts         Post[]
+  comments      Comment[]
+  likedPosts    UserLike[]
+  // Add this relation
+  moodHistory   MoodHistory[]
 }
 
 model Journal {
@@ -52,6 +54,8 @@ model Post {
   user          User      @relation(fields: [userId], references: [id])
   // One-to-many relationship with Comment
   comments      Comment[]
+  // Add this new relation
+  likedBy       UserLike[]
 }
 
 model Comment {
@@ -78,4 +82,34 @@ model Meditate {
   steps           String[]
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
+}
+
+// Add this new model
+model UserLike {
+  id        String   @id @default(uuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+
+  // Ensure a user can only like a post once
+  @@unique([userId, postId])
+}
+
+// Add this new model for tracking mood history
+model MoodHistory {
+  id            String    @id @default(uuid())
+  userId        String
+  mood          String
+  startTime     DateTime  @default(now()) @map("start_time")
+  endTime       DateTime? @map("end_time")
+  durationMinutes Int?    @map("duration_minutes")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Foreign key to User
+  user          User      @relation(fields: [userId], references: [id])
 }
