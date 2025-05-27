@@ -755,6 +755,47 @@
   - `404 Not Found`: No journal entries found for recommendations
   - `500 Server Error`: Server error
 
+#### Get Pattern Analysis
+
+- **Endpoint:** `GET /api/chat/patterns`
+- **Access:** Protected
+- **Headers:** `Authorization: Bearer YOUR_TOKEN`
+- **Description:** Gets AI-generated pattern analysis from user's journal and mood data with bullet point observations
+- **Response (200 OK):**
+  ```json
+  {
+    "patterns": "- Anda lebih produktif di pagi hari, terutama setelah kegiatan olahraga.\n- Mood Anda cenderung menurun setelah menghabiskan waktu di media sosial lebih dari 1 jam.\n- Ada korelasi positif antara waktu tidur yang cukup dan tingkat energi Anda."
+  }
+  ```
+- **Note:** Pattern analysis is presented as bullet points showing correlations between user activities, mood, productivity, and habits
+- **Error Responses:**
+  - `401 Unauthorized`: Not authorized
+  - `404 Not Found`: No journal entries found for analysis
+  - `500 Server Error`: Server error
+
+#### Get Progress Analysis
+
+- **Endpoint:** `GET /api/chat/progress`
+- **Access:** Protected
+- **Headers:** `Authorization: Bearer YOUR_TOKEN`
+- **Description:** Gets a summary of the user's progress in mental wellbeing over time based on journal entries and mood history
+- **Query Parameters:**
+  - `days` (optional): Number of days to analyze (default: 30)
+- **Response (200 OK):**
+  ```json
+  {
+    "period": "30 hari",
+    "growthPercentage": "+20%",
+    "message": "Dalam 30 hari terakhir, terdapat peningkatan 20% dalam catatan mood positif Anda. Ini menunjukkan perkembangan yang baik dalam kesejahteraan mental Anda.",
+    "positiveMoodPercentage": 70
+  }
+  ```
+- **Note:** Provides a summary of the user's mental wellbeing progress with percentage growth and personalized message
+- **Error Responses:**
+  - `401 Unauthorized`: Not authorized
+  - `404 Not Found`: No data available for analysis
+  - `500 Server Error`: Server error
+
 ---
 
 ### Mood History (All Protected)
@@ -933,6 +974,33 @@
   }
   ```
 - **Note:** Provides detailed statistics about how much time the user spent in each mood state
+- **Error Responses:**
+  - `401 Unauthorized`: Not authorized
+  - `500 Server Error`: Server error
+
+#### Get Mood Distribution
+
+- **Endpoint:** `GET /api/mood-history/distribution`
+- **Access:** Protected
+- **Headers:** `Authorization: Bearer YOUR_TOKEN`
+- **Description:** Gets percentage distribution across the 5 mood categories (Hebat, Baik, Oke, Buruk, Sangat Buruk)
+- **Query Parameters:**
+  - `startDate` (optional): Filter by start date (ISO format)
+  - `endDate` (optional): Filter by end date (ISO format)
+- **Response (200 OK):**
+  ```json
+  {
+    "totalEntries": 25,
+    "distribution": {
+      "Hebat": 20.0,
+      "Baik": 40.0,
+      "Oke": 25.0,
+      "Buruk": 10.0,
+      "Sangat Buruk": 5.0
+    }
+  }
+  ```
+- **Note:** Percentages always sum to 100% across all 5 mood categories
 - **Error Responses:**
   - `401 Unauthorized`: Not authorized
   - `500 Server Error`: Server error

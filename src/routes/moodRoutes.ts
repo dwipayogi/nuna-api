@@ -5,7 +5,8 @@ import {
   getActiveMood,
   updateMoodEntry,
   getMoodHistory,
-  getMoodStats
+  getMoodStats,
+  getMoodDistribution,
 } from "../controllers/moodController.ts";
 
 const router = express.Router();
@@ -19,5 +20,6 @@ router.get("/active", getActiveMood);
 router.put("/:id", updateMoodEntry);
 router.get("/", getMoodHistory);
 router.get("/stats", getMoodStats);
+router.get("/distribution", getMoodDistribution);
 
 export default router;
