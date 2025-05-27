@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
 import { AccessToken } from "livekit-server-sdk";
+import dotenv from "dotenv";
+import { server } from "typescript";
+dotenv.config();
+
+const LIVEKIT_URL: string = process.env.LIVEKIT_URL || "wss://your-livekit-url";
 
 export const generateRandomRoomName = (length: number = 6): string => {
   const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -36,6 +41,7 @@ export const createToken = async (req: Request, res: Response) => {
     return res.status(200).json({
       token,
       roomName,
+      serverUrl: LIVEKIT_URL,
       participantIdentity: participantName,
     });
   } catch (error) {
