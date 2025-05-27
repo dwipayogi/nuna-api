@@ -8,6 +8,7 @@ import commentRoutes from "./src/routes/commentRoutes.ts";
 import meditateRoutes from "./src/routes/meditateRoutes.ts";
 import chatRoutes from "./src/routes/chatRoutes.ts";
 import moodHistoryRoutes from "./src/routes/moodRoutes.ts";
+import livekitRoutes from "./src/routes/livekitRoutes.ts";
 
 // Load environment variables
 dotenv.config();
@@ -29,6 +30,7 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/meditate", meditateRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/mood-history", moodHistoryRoutes);
+app.use("/api/livekit", livekitRoutes);
 
 // Root route
 app.get("/", (req, res) => {

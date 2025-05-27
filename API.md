@@ -1004,3 +1004,26 @@
 - **Error Responses:**
   - `401 Unauthorized`: Not authorized
   - `500 Server Error`: Server error
+
+---
+
+### LiveKit Video Sessions
+
+#### Create LiveKit Token
+
+- **Endpoint:** `POST /api/livekit/token`
+- **Access:** Protected
+- **Headers:** `Authorization: Bearer YOUR_TOKEN`
+- **Description:** Creates a LiveKit token for real-time audio/video communication in a randomly generated room
+- **Response (200 OK):**
+  ```json
+  {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "roomName": "room-a1b2c3",
+    "participantIdentity": "user-uuid-string"
+  }
+  ```
+- **Note:** The generated token is valid for 10 minutes and allows the user to join the specified room
+- **Error Responses:**
+  - `401 Unauthorized`: Not authorized
+  - `500 Server Error`: Server error
