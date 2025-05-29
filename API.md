@@ -583,6 +583,7 @@
       "longDescription": "A comprehensive morning meditation that helps you set intentions for the day",
       "duration": 300,
       "imageUrl": "https://example.com/meditation-image.jpg",
+      "link": "https://example.com/meditation-audio.mp3",
       "steps": ["Find a quiet place", "Sit comfortably", "Close your eyes", "Focus on your breath"],
       "createdAt": "2023-01-15T10:30:00Z",
       "updatedAt": "2023-01-15T10:30:00Z"
@@ -606,6 +607,7 @@
     "longDescription": "A comprehensive morning meditation that helps you set intentions for the day",
     "duration": 300,
     "imageUrl": "https://example.com/meditation-image.jpg",
+    "link": "https://example.com/meditation-audio.mp3",
     "steps": [
       "Find a quiet place",
       "Sit comfortably",
@@ -632,6 +634,7 @@
     "longDescription": "A comprehensive morning meditation that helps you set intentions for the day",
     "duration": 300,
     "imageUrl": "https://example.com/meditation-image.jpg",
+    "link": "https://example.com/meditation-audio.mp3",
     "steps": [
       "Find a quiet place",
       "Sit comfortably",
@@ -649,6 +652,7 @@
     "longDescription": "A comprehensive morning meditation that helps you set intentions for the day",
     "duration": 300,
     "imageUrl": "https://example.com/meditation-image.jpg",
+    "link": "https://example.com/meditation-audio.mp3",
     "steps": [
       "Find a quiet place",
       "Sit comfortably",
@@ -675,6 +679,7 @@
     "longDescription": "Updated long description",
     "duration": 450,
     "imageUrl": "https://example.com/updated-image.jpg",
+    "link": "https://example.com/updated-audio.mp3",
     "steps": ["Updated step 1", "Updated step 2"]
   }
   ```
@@ -687,6 +692,7 @@
     "longDescription": "Updated long description",
     "duration": 450,
     "imageUrl": "https://example.com/updated-image.jpg",
+    "link": "https://example.com/updated-audio.mp3",
     "steps": ["Updated step 1", "Updated step 2"],
     "createdAt": "2023-01-15T10:30:00Z",
     "updatedAt": "2023-01-15T11:45:00Z"
