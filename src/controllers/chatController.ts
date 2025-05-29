@@ -8,9 +8,78 @@ const groq = new Groq();
 export const chatWithAI = async (req: Request, res: Response) => {
   try {
     const { message } = req.body;
+    const userId = req.user.id;
 
     if (!message) {
       return res.status(400).json({ message: "Message is required" });
+    }
+
+    // Fetch user's recent journals
+    const journals = await prisma.journal.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 5, // Get 5 most recent journals
+    });
+
+    // Fetch user's recent mood history
+    const moodHistory = await prisma.moodHistory.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        startTime: "desc",
+      },
+      take: 10, // Get 10 most recent mood records
+    });
+
+    // Format journal data
+    const journalData = journals.map((journal) => {
+      return {
+        date: new Date(journal.createdAt).toLocaleDateString(),
+        title: journal.title,
+        content:
+          journal.content.substring(0, 100) +
+          (journal.content.length > 100 ? "..." : ""),
+        mood: journal.mood,
+      };
+    });
+
+    // Format mood history data
+    const moodData = moodHistory.map((mood) => {
+      return {
+        mood: mood.mood,
+        date: new Date(mood.startTime).toLocaleDateString(),
+        duration: mood.durationMinutes || "Tidak diketahui",
+      };
+    });
+
+    // Create context for AI based on user data
+    let userContext = "";
+
+    if (journals.length > 0 || moodHistory.length > 0) {
+      userContext = `
+KONTEKS PENGGUNA:
+
+${
+  journals.length > 0
+    ? `JURNAL TERBARU:
+${journalData.map((j) => `- ${j.date}: ${j.mood} - ${j.title}`).join("\n")}`
+    : ""
+}
+
+${
+  moodHistory.length > 0
+    ? `RIWAYAT MOOD:
+${moodData
+  .map((m) => `- ${m.date}: ${m.mood} (${m.duration} menit)`)
+  .join("\n")}`
+    : ""
+}
+`;
     }
 
     const chatCompletion = await groq.chat.completions.create({
@@ -22,7 +91,8 @@ export const chatWithAI = async (req: Request, res: Response) => {
         {
           role: "system",
           content:
-            "Anda adalah seorang ahli psikologi. Berikan jawaban yang informatif dan mendukung dengan bahasa yang mudah dipahami. Jawab dengan bahasa Indonesia.",
+            "Anda adalah seorang ahli psikologi. Berikan jawaban yang informatif dan mendukung dengan bahasa yang mudah dipahami. Jawab dengan bahasa Indonesia. Jika pengguna memiliki data jurnal atau mood, gunakan informasi ini untuk memberikan jawaban yang lebih personal dan kontekstual." +
+            userContext,
         },
       ],
       model: "llama-3.1-8b-instant",

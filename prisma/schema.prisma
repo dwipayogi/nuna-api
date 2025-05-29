@@ -79,6 +79,7 @@ model Meditate {
   longDescription String
   duration        Int
   imageUrl        String
+  link            String?   // Added link field for meditation resource
   steps           String[]
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")

@@ -44,8 +44,15 @@ export const getMeditationById = async (req: Request, res: Response) => {
 // Create a new meditation
 export const createMeditation = async (req: Request, res: Response) => {
   try {
-    const { title, description, longDescription, duration, imageUrl, steps } =
-      req.body;
+    const {
+      title,
+      description,
+      longDescription,
+      duration,
+      imageUrl,
+      link,
+      steps,
+    } = req.body;
 
     if (!title || !description || !duration) {
       return res.status(400).json({
@@ -61,6 +68,7 @@ export const createMeditation = async (req: Request, res: Response) => {
         longDescription: longDescription || "",
         duration,
         imageUrl: imageUrl || "",
+        link: link || null,
         steps: steps || [],
       },
     });
@@ -76,8 +84,15 @@ export const createMeditation = async (req: Request, res: Response) => {
 export const updateMeditation = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { title, description, longDescription, duration, imageUrl, steps } =
-      req.body;
+    const {
+      title,
+      description,
+      longDescription,
+      duration,
+      imageUrl,
+      link,
+      steps,
+    } = req.body;
 
     // Check if meditation exists
     const existingMeditation = await prisma.meditate.findUnique({
@@ -101,6 +116,7 @@ export const updateMeditation = async (req: Request, res: Response) => {
         longDescription: longDescription || existingMeditation.longDescription,
         duration: duration || existingMeditation.duration,
         imageUrl: imageUrl || existingMeditation.imageUrl,
+        link: link || existingMeditation.link,
         steps: steps || existingMeditation.steps,
       },
     });
